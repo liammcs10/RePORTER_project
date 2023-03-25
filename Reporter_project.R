@@ -1,7 +1,5 @@
 library(tibble)
-library(ggplot2)
 library(repoRter.nih)
-library(ggrepel)
 library(dplyr)
 library(scales)
 library(tufte)
@@ -9,7 +7,7 @@ library(data.table)
 data("nih_fields")
 
 #takes PI name as string
-repoRter_data_PI <- function(PI_name){
+repoRter_data_PI <- function(PI_list){
   
   
   fields <- nih_fields %>%
@@ -22,33 +20,23 @@ repoRter_data_PI <- function(PI_name){
                       include_active_projects = TRUE,
                       pi_names = list(first_name = character(1),
                                       last_name = character(1),
-                                      any_name = c(PI_name))
+                                      any_name = PI_list)
                     ),
                   include_fields = fields,
                   message = TRUE)
   
   res <- get_nih_data(req)
   
-  colnames(res)
-  print(res)
+  #colnames(res)
+  #print(res)
   
   return(res)
   
 }
 
+# PI_list should be a character vector
+PI_list = c("Sean McSweeney")
 
-PI_list = list("Sean McSweeney")
+grant_info = repoRter_data_PI(PI_list)
 
-
-for (name in PI_list){
-  
-  grant_info = repoRter_data_PI(name)
-  print(grant_info)
-  write.table(grant_info, file = "output.txt", sep = " ")
-
-  }
-
-
-
-
-
+write.csv(grant_info, "Grant_info.csv")
